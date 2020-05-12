@@ -77,6 +77,7 @@ static const NSUInteger kMaxBatchSize = 475000; // 475KB
 
     // This is a workaround for an IOS 8.3 bug that causes Content-Type to be incorrectly set
     [request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [request addValue:@"mobile://ios" forHTTPHeaderField:@"Origin"]
 
     [request setHTTPMethod:@"POST"];
 
