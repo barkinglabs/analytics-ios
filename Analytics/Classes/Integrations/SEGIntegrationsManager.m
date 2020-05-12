@@ -517,6 +517,7 @@ NSString *const kSEGCachedSettingsFilename = @"analytics.settings.v2.plist";
     }
     
 
+    SEGEventType eventType = [self eventTypeFromSelector:selector];
     NSMutableArray *newArguments = [arguments mutableCopy];
 
     if (eventType != SEGEventTypeUndefined) {
