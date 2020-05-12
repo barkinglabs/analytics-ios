@@ -144,38 +144,42 @@ static const NSUInteger kMaxBatchSize = 475000; // 475KB
 
 - (NSURLSessionDataTask *)settingsForWriteKey:(NSString *)writeKey completionHandler:(void (^)(BOOL success, JSON_DICT _Nullable settings))completionHandler
 {
-    NSURLSession *session = self.genericSession;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        completionHandler(NO, nil)
+    })
 
-    NSURL *url = [SEGMENT_CDN_BASE URLByAppendingPathComponent:[NSString stringWithFormat:@"/projects/%@/settings", writeKey]];
-    NSMutableURLRequest *request = self.requestFactory(url);
-    [request setHTTPMethod:@"GET"];
-
-    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *_Nullable data, NSURLResponse *_Nullable response, NSError *_Nullable error) {
-        if (error != nil) {
-            SEGLog(@"Error fetching settings %@.", error);
-            completionHandler(NO, nil);
-            return;
-        }
-
-        NSInteger code = ((NSHTTPURLResponse *)response).statusCode;
-        if (code > 300) {
-            SEGLog(@"Server responded with unexpected HTTP code %d.", code);
-            completionHandler(NO, nil);
-            return;
-        }
-
-        NSError *jsonError = nil;
-        id responseJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
-        if (jsonError != nil) {
-            SEGLog(@"Error deserializing response body %@.", jsonError);
-            completionHandler(NO, nil);
-            return;
-        }
-
-        completionHandler(YES, responseJson);
-    }];
-    [task resume];
-    return task;
+//    NSURLSession *session = self.genericSession;
+//
+//    NSURL *url = [SEGMENT_CDN_BASE URLByAppendingPathComponent:[NSString stringWithFormat:@"/projects/%@/settings", writeKey]];
+//    NSMutableURLRequest *request = self.requestFactory(url);
+//    [request setHTTPMethod:@"GET"];
+//
+//    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *_Nullable data, NSURLResponse *_Nullable response, NSError *_Nullable error) {
+//        if (error != nil) {
+//            SEGLog(@"Error fetching settings %@.", error);
+//            completionHandler(NO, nil);
+//            return;
+//        }
+//
+//        NSInteger code = ((NSHTTPURLResponse *)response).statusCode;
+//        if (code > 300) {
+//            SEGLog(@"Server responded with unexpected HTTP code %d.", code);
+//            completionHandler(NO, nil);
+//            return;
+//        }
+//
+//        NSError *jsonError = nil;
+//        id responseJson = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
+//        if (jsonError != nil) {
+//            SEGLog(@"Error deserializing response body %@.", jsonError);
+//            completionHandler(NO, nil);
+//            return;
+//        }
+//
+//        completionHandler(YES, responseJson);
+//    }];
+//    [task resume];
+//    return task;
 }
 
 - (NSURLSessionDataTask *)attributionWithWriteKey:(NSString *)writeKey forDevice:(JSON_DICT)context completionHandler:(void (^)(BOOL success, JSON_DICT _Nullable properties))completionHandler;
