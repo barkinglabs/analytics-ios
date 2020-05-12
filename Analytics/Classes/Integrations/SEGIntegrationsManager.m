@@ -399,34 +399,7 @@ NSString *const kSEGCachedSettingsFilename = @"analytics.settings.v2.plist";
 
 - (void)refreshSettings
 {
-    seg_dispatch_specific_async(_serialQueue, ^{
-        if (self.settingsRequest) {
-            return;
-        }
-
-        self.settingsRequest = [self.httpClient settingsForWriteKey:self.configuration.writeKey completionHandler:^(BOOL success, NSDictionary *settings) {
-            seg_dispatch_specific_async(self -> _serialQueue, ^{
-                if (success) {
-                    [self setCachedSettings:settings];
-                } else {
-                    NSDictionary *previouslyCachedSettings = [self cachedSettings];
-                    if (previouslyCachedSettings) {
-                        [self setCachedSettings:previouslyCachedSettings];
-                    } else {
-                        // If settings request fail, fall back to using just Segment integration.
-                        // Doesn't address situations where this callback never gets called (though we don't expect that to ever happen).
-                        [self setCachedSettings:@{
-                            @"integrations" : @{
-                                @"Segment.io" : @{@"apiKey" : self.configuration.writeKey},
-                            },
-                            @"plan" : @{@"track" : @{}}
-                        }];
-                    }
-                }
-                self.settingsRequest = nil;
-            });
-        }];
-    });
+    return;
 }
 
 #pragma mark - Private
@@ -543,15 +516,6 @@ NSString *const kSEGCachedSettingsFilename = @"analytics.settings.v2.plist";
         return;
     }
     
-    SEGEventType eventType = [self eventTypeFromSelector:selector];
-    if (eventType == SEGEventTypeTrack) {
-        SEGTrackPayload *eventPayload = arguments[0];
-        BOOL enabled = [[self class] isTrackEvent:eventPayload.event enabledForIntegration:key inPlan:self.cachedSettings[@"plan"]];
-        if (!enabled) {
-            SEGLog(@"Not sending call to %@ because it is disabled in plan.", key);
-            return;
-        }
-    }
 
     NSMutableArray *newArguments = [arguments mutableCopy];
 
