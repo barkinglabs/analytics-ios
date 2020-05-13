@@ -399,7 +399,12 @@ NSString *const kSEGCachedSettingsFilename = @"analytics.settings.v2.plist";
 
 - (void)refreshSettings
 {
-    return;
+    [self setCachedSettings:@{
+        @"integrations" : @{
+            @"Segment.io" : @{@"apiKey" : self.configuration.writeKey},
+        },
+        @"plan" : @{@"track" : @{}}
+    }];
 }
 
 #pragma mark - Private
