@@ -51,6 +51,7 @@ static const NSUInteger kMaxBatchSize = 475000; // 475KB
             @"Content-Type" : @"application/json",
             @"Authorization" : [@"Basic " stringByAppendingString:[[self class] authorizationHeader:writeKey]],
             @"User-Agent" : [NSString stringWithFormat:@"analytics-ios/%@", [SEGAnalytics version]],
+            @"Origin": @"mobile://ios",
         };
         session = [NSURLSession sessionWithConfiguration:config delegate:self.httpSessionDelegate delegateQueue:NULL];
         self.sessionsByWriteKey[writeKey] = session;
